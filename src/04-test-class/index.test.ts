@@ -4,7 +4,7 @@ import {
   TransferFailedError,
   getBankAccount,
 } from '.';
-import lodash, { result } from 'lodash';
+import lodash from 'lodash';
 
 describe('BankAccount', () => {
   const balance = 5000;
@@ -17,7 +17,9 @@ describe('BankAccount', () => {
   });
 
   test('should throw InsufficientFundsError error when withdrawing more than balance', () => {
-    expect(account.withdraw(6000)).toThrowError(InsufficientFundsError);
+    expect(() => account.withdraw(moreBalance)).toThrowError(
+      InsufficientFundsError,
+    );
   });
 
   test('should throw error when transferring more than balance', () => {
@@ -27,7 +29,7 @@ describe('BankAccount', () => {
   });
 
   test('should throw error when transferring to the same account', () => {
-    expect(() => account.transfer(moreBalance, transferAccount)).toThrowError(
+    expect(() => account.transfer(moreBalance, account)).toThrowError(
       TransferFailedError,
     );
   });
@@ -46,7 +48,7 @@ describe('BankAccount', () => {
 
   test('should transfer money', () => {
     expect(account.transfer(lessBalance, transferAccount).getBalance()).toBe(
-      account.getBalance,
+      account.getBalance(),
     );
   });
 
