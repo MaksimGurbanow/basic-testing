@@ -7,7 +7,7 @@ export const generateLinkedList = <T>(elements: T[]): LinkedListNode<T> => {
   if (!elements.length) {
     return { value: null, next: null };
   }
-
+  debugger;
   const [head, ...rest] = elements;
 
   return {

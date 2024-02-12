@@ -1,44 +1,79 @@
-// Uncomment the code below and write your tests
-// import { getBankAccount } from '.';
+import {
+  InsufficientFundsError,
+  SynchronizationFailedError,
+  TransferFailedError,
+  getBankAccount,
+} from '.';
+import lodash from 'lodash';
 
 describe('BankAccount', () => {
+  const balance = 5000;
+  const moreBalance = 6000;
+  const lessBalance = 3000;
+  const account = getBankAccount(balance);
+  const transferAccount = getBankAccount(moreBalance);
   test('should create account with initial balance', () => {
-    // Write your test here
+    expect(account.getBalance()).toBe(balance);
   });
 
   test('should throw InsufficientFundsError error when withdrawing more than balance', () => {
-    // Write your test here
+    expect(() => account.withdraw(moreBalance)).toThrowError(
+      InsufficientFundsError,
+    );
   });
 
   test('should throw error when transferring more than balance', () => {
-    // Write your test here
+    expect(() => account.transfer(moreBalance, transferAccount)).toThrowError(
+      InsufficientFundsError,
+    );
   });
 
   test('should throw error when transferring to the same account', () => {
-    // Write your test here
+    expect(() => account.transfer(moreBalance, account)).toThrowError(
+      TransferFailedError,
+    );
   });
 
   test('should deposit money', () => {
-    // Write your test here
+    expect(account.deposit(moreBalance).getBalance()).toBe(
+      account.getBalance(),
+    );
   });
 
   test('should withdraw money', () => {
-    // Write your test here
+    expect(account.withdraw(lessBalance).getBalance()).toBe(
+      account.getBalance(),
+    );
   });
 
   test('should transfer money', () => {
-    // Write your test here
+    expect(account.transfer(lessBalance, transferAccount).getBalance()).toBe(
+      account.getBalance(),
+    );
   });
 
   test('fetchBalance should return number in case if request did not failed', async () => {
-    // Write your tests here
+    const mockBalance = 1;
+    jest.spyOn(lodash, 'random').mockReturnValue(mockBalance);
+    const balance = await account.fetchBalance();
+    expect(balance).toBe(mockBalance);
+    jest.restoreAllMocks();
   });
 
   test('should set new balance if fetchBalance returned number', async () => {
-    // Write your tests here
+    jest.spyOn(account, 'fetchBalance').mockResolvedValue(moreBalance);
+    await account.synchronizeBalance();
+    const balance = account.getBalance();
+    expect(balance).toBe(moreBalance);
+    jest.restoreAllMocks();
   });
 
   test('should throw SynchronizationFailedError if fetchBalance returned null', async () => {
-    // Write your tests here
+    jest.spyOn(account, 'fetchBalance').mockResolvedValue(null);
+    expect(async () => await account.synchronizeBalance()).rejects.toThrow(
+      SynchronizationFailedError,
+    );
+
+    jest.restoreAllMocks();
   });
 });
